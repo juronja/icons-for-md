@@ -70,7 +70,7 @@ pipeline {
             steps {
                 sh "docker image prune --all --force"
                 // sh "printenv"
-                sh "mkdir -p /apps/$PROJECT_NAME"
+                sh "sudo mkdir -p /apps/$PROJECT_NAME"
                 dir("/apps/$PROJECT_NAME") {
                     sh "curl -o compose.base.yaml https://raw.githubusercontent.com/juronja/icons-for-md/refs/heads/main/compose.base.yaml > compose.base.yaml"
                     sh "curl -o compose.yaml https://raw.githubusercontent.com/juronja/icons-for-md/refs/heads/main/compose.dev.yaml > compose.yaml"
