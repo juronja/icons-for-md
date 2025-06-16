@@ -1,0 +1,205 @@
+@import './base.css';
+
+#app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 1.75rem;
+  padding-top: var(--app-padding-top);
+  font-weight: normal;
+}
+
+header {
+  display: flex;
+  align-items: center;
+  margin: 0 0 2rem 0;
+  gap: 1rem;
+  z-index: 2;
+  height: var(--header-height);
+  justify-content: space-between;
+}
+
+main {
+  flex: 1 0 auto;
+}
+
+footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 20px;
+  height: var(--footer-height);
+  padding: 0 calc(var(--gutter-x)* .5);
+  border-top: 0.1rem solid var(--color-border);
+  width: 100% !important; /* Override max-width */
+}
+
+a {
+  text-decoration: none;
+  color: var(--color-primary);
+  transition: 0.4s;
+  padding: 3px;
+}
+
+/* Fonts */
+h1 {
+  font-family: "Asap", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 500;
+  font-style: normal;
+  font-size: 1.8rem;
+  margin-top: 0.5rem;
+  margin-bottom: calc(var(--gutter-y)* .2);
+}
+
+h2 {
+  font-family: "Asap", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 500;
+  margin-bottom: calc(var(--gutter-y)* .5);
+  font-size: 1.2rem;
+}
+
+button:hover {
+  cursor: pointer;
+}
+
+hr {
+  margin: 1.5rem calc(var(--gutter-x)* .0);
+  background-color: var(--color-border);
+  border: none;
+  height: 0.1rem;
+}
+
+.button {
+  padding: var(--input-padding);
+  color: var(--color-button-text);
+  background-color: var(--color-primary);
+  border: 1px solid var(--color-border);
+  border-radius: 0.25rem;
+  font-size: 1rem;
+}
+  .button:hover {
+    background-color: var(--color-primary-muted);
+    box-shadow: 0 0 0 .25rem var(--color-shadow-hover);
+    outline: 0;
+  }
+
+.section-box {
+  padding: 0.1rem 0;
+  background-color: var(--color-section-background);
+  border-radius: 0.25rem;
+}
+
+.section-gap {
+  margin-top: calc(var(--section-gap) / 2);
+}
+
+.input-req-validation {
+  font-size: 0.75rem;
+  color: var(--color-danger);
+}
+
+/* Layout defaults */
+.col-100 {
+  flex: 0 0 auto;
+  width: 100%;
+}
+
+.col-80 {
+  flex: 0 0 auto;
+  width: 80%;
+}
+
+.col-70 {
+  flex: 0 0 auto;
+  width: 70%;
+}
+
+.col-60 {
+  flex: 0 0 auto;
+  width: 60%;
+}
+
+.col-50 {
+  flex: 0 0 auto;
+  width: 50%;
+}
+
+.col-40 {
+  flex: 0 0 auto;
+  width: 40%;
+}
+
+.col-30 {
+  flex: 0 0 auto;
+  width: 30%;
+}
+
+.col-25 {
+  flex: 0 0 auto;
+  width: 25%;
+}
+
+.col-20 {
+  flex: 0 0 auto;
+  width: 20%;
+}
+
+.col-15 {
+  flex: 0 0 auto;
+  width: 15%;
+}
+
+.col-10 {
+  flex: 0 0 auto;
+  width: 10%;
+}
+
+.col-5 {
+  flex: 0 0 auto;
+  width: 5%;
+}
+
+
+
+
+/* Transitions */
+.v-enter-active, .v-leave-active {
+  transition: opacity 50ms linear;
+}
+
+.v-enter-from, .v-leave-to {
+  opacity: 0;
+}
+
+
+@media (hover: hover) {
+  a:hover {
+    background-color: var(--color-primary-muted);
+  }
+}
+
+/* Responsive layout */
+@media screen and (max-width: 480px) {
+  .logo img {
+    width: 220px;
+    height: 33px;
+  }
+}
+
+@media screen and (max-width: 1024px) {
+  h1 {
+    font-size: 1.4rem;
+  }
+
+  h2 {
+    font-size: 1.1rem;
+  }
+
+  #app {
+    display: flex;
+  }
+}

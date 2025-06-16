@@ -1,0 +1,14 @@
+# Folders
+**/node_modules/
+**/.*
+
+# Files
+.*
+*.md
+*.yaml
+*.groovy
+*.sh
+Dockerfile
+npm-debug.log
+compose.yaml
+Jenkinsfile

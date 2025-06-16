@@ -1,0 +1,33 @@
+#
+# This is a base compose file used for local development and production compose use cases.
+#
+
+services:
+  app:
+    container_name: ub-app
+    restart: unless-stopped
+    environment: # Add variables to this container
+      MONGO_ADMIN_USER: ${MONGO_ADMIN_USER}
+      MONGO_ADMIN_PASS: ${MONGO_ADMIN_PASS}
+  db:
+    image: mongo
+    container_name: ub-mongodb
+    restart: unless-stopped
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 5s
+      timeout: 10s
+      retries: 5
+    environment: # Add variables to this container
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ADMIN_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ADMIN_PASS}
+  db_ui:
+    image: mongo-express
+    container_name: ub-mongo-express
+    restart: unless-stopped
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: ${MONGO_ADMIN_USER}
+      ME_CONFIG_MONGODB_ADMINPASSWORD: ${MONGO_ADMIN_PASS}
+#      ME_CONFIG_BASICAUTH_USERNAME: basicusername
+#      ME_CONFIG_BASICAUTH_PASSWORD: basicusernamepass
+      ME_CONFIG_MONGODB_SERVER: ub-mongodb

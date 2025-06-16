@@ -1,0 +1,38 @@
+#
+# This compose file is for production deployment.
+#
+
+name: utm-builder # Will be used for auto naming (network, volume names)
+services:
+  app:
+    extends:
+      file: compose.base.yaml
+      service: app
+    image: juronja/utm-builder:latest
+    pull_policy: always # Compose always pulls the image from the registry.
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - 3131:3000 # These ports are in format <host-port>:<container-port>
+  db:
+    extends:
+      file: compose.base.yaml
+      service: db
+    volumes:
+      - mongodb:/data/db #Volume mapping for persistency
+  db_ui:
+    extends:
+      file: compose.base.yaml
+      service: db_ui
+    depends_on:
+      db:
+        condition: service_healthy
+    ports: 
+      - 3181:8081
+    volumes:
+      - mongo-express:/app/db #Volume mapping for persistency
+
+volumes: # It will prepend the project name
+  mongodb:
+  mongo-express:
