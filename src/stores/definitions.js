@@ -34,11 +34,26 @@ export const useDefinitionsStore = defineStore('definitions', () => {
     return svg.value.filter(name => name.toLowerCase().includes(query))
   })
 
+  // Dynamically determine the base URL
+  const baseUrl = computed(() => {
+    const hostname = window.location.hostname;
+    if (hostname === 'localhost' || hostname.startsWith('127.0.0.1')) {
+      // Development environment
+      return 'http://localhost:3000'
+    } else if (hostname.includes('dev.homelabtales.com')) {
+      // Dev environment
+      return 'https://icons-for-md-dev.homelabtales.com'
+    } else {
+      // Production
+      return 'https://icons-for-md.homelabtales.com'
+    }
+  });
+
   const generatedUrl = computed(() => {
     if (selectedIcons.value == '' ) {
         return ''
       } else {
-        return (`https://icons-for-md-dev.homelabtales.com/icons?i=${selectedIcons.value.join(',')}`)
+        return (`${baseUrl.value}/icons?i=${selectedIcons.value.join(',')}`)
       }
   })
 
