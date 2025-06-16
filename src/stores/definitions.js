@@ -38,7 +38,7 @@ export const useDefinitionsStore = defineStore('definitions', () => {
     if (selectedIcons.value == '' ) {
         return ''
       } else {
-        return (`http://localhost:3000/icons?i=${selectedIcons.value.join(',')}`)
+        return (`https://icons-for-md-dev.homelabtales.com/icons?i=${selectedIcons.value.join(',')}`)
       }
   })
 
