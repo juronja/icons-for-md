@@ -70,10 +70,15 @@ pipeline {
             steps {
                 sh "docker image prune --all --force"
                 // sh "printenv"
-                sh "curl -o compose.base.yaml https://raw.githubusercontent.com/juronja/icons-for-md/refs/heads/main/compose.base.yaml > compose.base.yaml"
-                sh "curl -o compose.yaml https://raw.githubusercontent.com/juronja/icons-for-md/refs/heads/main/compose.dev.yaml > compose.yaml"
+                sh "mkdir -p /apps/$PROJECT_NAME"
+                dir("/apps/$PROJECT_NAME") {
+                    sh "curl -o compose.base.yaml https://raw.githubusercontent.com/juronja/icons-for-md/refs/heads/main/compose.base.yaml > compose.base.yaml"
+                    sh "curl -o compose.yaml https://raw.githubusercontent.com/juronja/icons-for-md/refs/heads/main/compose.dev.yaml > compose.yaml"
+                }
                 echo "Starting container $PROJECT_NAME ..."
-                sh "docker compose up -d --remove-orphans"
+                dir("/apps/$PROJECT_NAME") {
+                    sh "docker compose up -d --remove-orphans"
+                }
             }
         }
         // stage('Deploy DEV on DOKS') {
