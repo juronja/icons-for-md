@@ -12,16 +12,6 @@ export const useDefinitionsStore = defineStore('definitions', () => {
   const searchText = ref('')
   const selectedIcons = ref([])
 
-  // Required fields Validation
-  const urlRequired = ref(false)
-
-  function inputReq(item) {
-    if (item === 'url' && inputUrl.value == 0) {
-      console.error('This field is required')
-      urlRequired.value = true
-    }
-  }
-
 
   //********* COMPUTED **********//
 
@@ -111,9 +101,7 @@ export const useDefinitionsStore = defineStore('definitions', () => {
     selectedIcons,
     generatedUrl,
     addSelectedIcon,
-    removeSelectedIcon,
-    urlRequired,
-    inputReq
+    removeSelectedIcon
   }
 })
 
