@@ -25,7 +25,17 @@ const store = useDefinitionsStore()
     <RouterView />
   </main>
   <footer>
-    <a href="https://github.com/juronja/utm-builder" target="_blank" class="github">GitHub <i class="bi bi-github"></i></a>
+    <div class="credits">
+        <div class="credit-item">
+          <p>Inspired by:</p>
+          <a href="https://skillicons.dev/" target="_blank">skillicons.dev</a>
+        </div>
+        <div class="credit-item">
+          <p>Icons source:</p>
+          <a href="https://dashboardicons.com/" target="_blank">dashboardicons.com</a>
+        </div>
+    </div>
+    <a href="https://github.com/juronja/icons-for-md" target="_blank" class="github">Github <i class="bi bi-github"></i></a>
   </footer>
 </template>
 
@@ -77,12 +87,30 @@ const store = useDefinitionsStore()
   white-space: nowrap;
 }
 
+.credits {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  font-size: 0.75rem;
+}
+
+.credit-item {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+
 .github {
   background-color: grey;
   padding: calc(var(--gutter-x)* .1) calc(var(--gutter-x)* .3);
   color: var(--color-button-text);
   border-radius: 0.25rem;
   font-size: 0.75rem;
+}
+
+.footer-icon {
+  height: 30px;
 }
 
 

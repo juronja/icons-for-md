@@ -44,7 +44,7 @@ async function toClipboard(item) {
       </div>
     </div>
     <div class="section section-box">
-      <h2>Selected Icons</h2>
+      <h2>Selected Icons (Click to remove)</h2>
       <div class="selected-icons-row">
         <!-- Display selected icons visually - just images -->
         <template v-if="store.selectedIcons.length > 0">
