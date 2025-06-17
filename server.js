@@ -49,7 +49,7 @@ async function fetchIconMetadata() {
 
 
 // Fetches SVG icon content directly from the GitHub repository.
-async function fetchSvgIconContent(iconName) {
+async function fetchIcons(iconName) {
     const iconUrl = `https://raw.githubusercontent.com/homarr-labs/dashboard-icons/main/svg/${iconName}.svg`
     console.log(`Fetching SVG source icon: ${iconUrl}`); // Debugging line
     try {
@@ -72,7 +72,7 @@ function createRoundedRectSVG(width, height, radius, fillColor) {
 }
 
 // Generates a combined WEBP of icon names.
-async function generateRasterImage(iSplit, max_icons_in_row, outputFormat = 'webp') {
+async function generateRasterImage(iSplit, max_icons_in_row) {
     const validIconNames = iSplit.filter(name => globalIconNameList.includes(name))
 
     // Define background properties
@@ -96,7 +96,7 @@ async function generateRasterImage(iSplit, max_icons_in_row, outputFormat = 'web
     // Fetch all individual SVG images concurrently and render them
     const imagePromises = validIconNames.map(async name => {
         // --- MODIFICATION START (Step 2 Example - inside generateRasterImage) ---
-        const svgBuffer = await fetchSvgIconContent(name) // Call the new SVG fetch function
+        const svgBuffer = await fetchIcons(name) // Call the new SVG fetch function
         if (!svgBuffer) {
             return null
         }
