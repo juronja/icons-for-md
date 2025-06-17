@@ -113,14 +113,14 @@ pipeline {
         }
         stage('Deploy MAIN on HOSTING-PROD') {
             environment {
-                HOSTING_CREDS = credentials('creds-hosting-prod')
+                HOSTING_CREDS = credentials('ssh-hosting-prod')
             }
             when {
                 branch "main" 
             }
             steps {
                 script { // sshagent must be in script block
-                    sshagent(['creds-hosting-prod']) {
+                    sshagent(['ssh-hosting-prod']) {
                         echo "Deploying Docker container on HOSTING-PROD ..."
                         sh "ssh -o StrictHostKeyChecking=no $HOSTING_CREDS_USR@$HOSTING_CREDS_PSW 'bash -c \"\$(wget -qLO - https://raw.githubusercontent.com/juronja/icons-for-md/refs/heads/main/compose-commands.sh)\"'"
                     }
