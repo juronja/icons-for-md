@@ -1,15 +1,16 @@
 import express from 'express'
 import ViteExpress from "vite-express"
-import sharp from 'sharp'
+import { Cheerio } from 'cheerio'
 
 
 // Start express server
 const app = express() // Initialize the express server
 
-
 const max_icons_in_row = 15
-const icon_size = 48
-const SCALE = icon_size / (300 - 44)
+const icon_display_size = 48 // This will be the viewBox size for each icon in the combined SVG
+const icon_content_size = 36 // This is the actual size you want the icon SVG to be within its container
+const gap = 5 // Gap between icons
+
 
 // Global variables to store icon metadata fetched from GitHub
 let globalIconNameList = []
@@ -17,13 +18,10 @@ let globalIconNameList = []
 
 // Middleware
 app.use(express.json()) // needed to parse the JSON to JS first, otherwise you gat an error!
-//app.use(express.static('dist')) // serves the index.html file on load from the dist folder, so you can use the frontend app on the express app port (e.g. - localhost:3000). This is actually not needed if you configure the vite.config server.proxy!
-
 
 
 // Fetches the list of icon names and themed icon information from the GitHub repository.
 // This function is called once when the server starts to populate global metadata.
-
 async function fetchIconMetadata() {
     console.log("Fetching icon metadata from GitHub...")
     try {
@@ -41,9 +39,6 @@ async function fetchIconMetadata() {
         console.log("Icon metadata fetched successfully.")
     } catch (error) {
         console.error("Error fetching icon metadata:", error)
-        // In a production environment, you might want a more robust error handling:
-        // - Retry fetching after a delay
-        // - Serve a default error page or a message indicating the issue
     }
 }
 
@@ -51,127 +46,109 @@ async function fetchIconMetadata() {
 // Fetches SVG icon content directly from the GitHub repository.
 async function fetchIcons(iconName) {
     const iconUrl = `https://raw.githubusercontent.com/homarr-labs/dashboard-icons/main/svg/${iconName}.svg`
-    console.log(`Fetching SVG source icon: ${iconUrl}`); // Debugging line
     try {
         const response = await fetch(iconUrl)
         if (!response.ok) {
             console.warn(`Failed to fetch SVG for ${iconName}: ${response.status} ${response.statusText}`)
             return null
         }
-        return await response.arrayBuffer() // Get as ArrayBuffer
+        const svgStringContent = await response.text()
+        return svgStringContent
     } catch (error) {
         console.error(`Error fetching SVG for ${iconName}:`, error)
         return null
     }
 }
 
-function createRoundedRectSVG(width, height, radius, fillColor) {
-    return `<svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg">
-                <rect x="0" y="0" width="${width}" height="${height}" rx="${radius}" ry="${radius}" fill="${fillColor}"/>
-            </svg>`
-}
 
-// Generates a combined WEBP of icon names.
-async function generateRasterImage(iSplit, max_icons_in_row) {
-    const validIconNames = iSplit.filter(name => globalIconNameList.includes(name))
+// Generates a combined SVG image from a list of icon names. Each icon will be placed within its own rounded rectangle background.
+async function generateCombinedSvg(iconNames, maxIconsInRow) {
+    const validIconNames = iconNames.filter(name => globalIconNameList.includes(name))
 
-    // Define background properties
-    const backgroundColor = 'rgb(36, 41, 56)' // Example: semi-transparent white
-    const borderRadius = 8 // Example border-radius in pixels
-    const gap = 5 // Gap between icons (both horizontally and vertically)
+    const backgroundColor = 'rgb(36, 41, 56)'
+    const borderRadius = 8
+    const effectivePadding = (icon_display_size - icon_content_size) / 2
 
-    // The desired size for the background container (from original icon_size)
-    const backgroundContainerSize = icon_size // 48px
+    const individualIconSVGPromises = validIconNames.map(async name => {
+        const svgContent = await fetchIcons(name)
 
-    // The desired size for the icon content itself
-    const iconContentSize = 36 // 46px, as requested
-
-    // Calculate padding needed to center the 46px icon within the 48px background container
-    const effectivePadding = (backgroundContainerSize - iconContentSize) / 2 // (48 - 46) / 2 = 1px
-
-    // Create the rounded rectangle SVG for the background
-    const backgroundSVG = createRoundedRectSVG(backgroundContainerSize, backgroundContainerSize, borderRadius, backgroundColor)
-    const backgroundBuffer = Buffer.from(backgroundSVG)
-
-    // Fetch all individual SVG images concurrently and render them
-    const imagePromises = validIconNames.map(async name => {
-        // --- MODIFICATION START (Step 2 Example - inside generateRasterImage) ---
-        const svgBuffer = await fetchIcons(name) // Call the new SVG fetch function
-        if (!svgBuffer) {
-            return null
+        if (typeof svgContent !== 'string') {
+            console.warn(`Skipping icon "${name}" because its SVG content is not a string.`);
+            return null;
         }
 
-        // Create sharp instance from SVG buffer.
-        // Use a high 'density' to ensure sharp rasterization of the vector graphic.
-        // Then resize the resulting high-res raster to iconContentSize.
-        const iconSharp = sharp(Buffer.from(svgBuffer))
-          .resize(iconContentSize, iconContentSize, {
-            fit: 'contain', // Ensure the entire icon fits without cropping
-            background: { r: 255, g: 255, b: 255, alpha: 0 } // Transparent background for the contained area
-        })
+        const svgMatch = svgContent.match(/<svg([^>]*)>([\s\S]*?)<\/svg>/i);
 
-        const iconResizedBuffer = await iconSharp.toBuffer()
+        if (!svgMatch) {
+            console.warn(`Invalid SVG structure for icon "${name}": Cannot find root <svg> tag.`);
+            return null;
+        }
 
-        // Create a blank image for the individual icon's composite, sized for the background container
-        const iconCanvas = sharp({
-            create: {
-                width: backgroundContainerSize,
-                height: backgroundContainerSize,
-                channels: 4,
-                background: { r: 255, g: 255, b: 255, alpha: 0 } // Transparent background
+        const svgAttributesString = svgMatch[1];
+        const svgInnerContent = svgMatch[2];
+
+        let originalViewBox = null;
+
+        // 1. Try to extract viewBox attribute
+        const viewBoxMatch = svgAttributesString.match(/viewBox="([^"]*)"/i);
+        if (viewBoxMatch) {
+            originalViewBox = viewBoxMatch[1];
+        } else {
+            // 2. If viewBox not found, try to extract width and height attributes
+            const widthMatch = svgAttributesString.match(/width="(\d+(\.\d+)?)"/i);
+            const heightMatch = svgAttributesString.match(/height="(\d+(\.\d+)?)"/i);
+
+            if (widthMatch && heightMatch) {
+                const width = parseFloat(widthMatch[1]);
+                const height = parseFloat(heightMatch[1]);
+                // Construct a viewBox from width and height, assuming 0 0 origin
+                originalViewBox = `0 0 ${width} ${height}`;
+                console.log(`Info: Icon "${name}" has no viewBox, but width/height found. Using inferred viewBox: "${originalViewBox}"`);
+            } else {
+                // 3. If neither viewBox nor width/height found, omit the icon and warn
+                console.warn(`Skipping icon "${name}": Neither viewBox nor width/height attributes found in the SVG. Cannot determine dimensions.`);
+                return null;
             }
-        })
-
-        // Composite the background and then the resized icon onto the canvas
-        return iconCanvas.composite([
-            { input: backgroundBuffer, top: 0, left: 0 },
-            { input: iconResizedBuffer, top: effectivePadding, left: effectivePadding } // Use calculated padding
-        ]).webp().toBuffer() // Convert to WEBP for consistency
-    })
-
-    // Filter out nulls and convert ArrayBuffers to Sharp image instances
-    const individualIconComposites = (await Promise.all(imagePromises)).filter(Boolean)
-
-    // Calculate dimensions of the final combined image
-    const numRows = Math.ceil(individualIconComposites.length / max_icons_in_row)
-    const actualMaxCols = Math.min(max_icons_in_row, individualIconComposites.length)
-
-    // Calculate final width and height considering the background container size and gaps
-    const finalWidth = actualMaxCols * backgroundContainerSize + (actualMaxCols > 0 ? (actualMaxCols - 1) * gap : 0)
-    const finalHeight = numRows * backgroundContainerSize + (numRows > 0 ? (numRows - 1) * gap : 0)
-
-
-    // Create a blank canvas for the final composite
-    const compositeImage = sharp({
-        create: {
-            width: finalWidth,
-            height: finalHeight,
-            channels: 4,
-            background: { r: 255, g: 255, b: 255, alpha: 0 } // Transparent background
         }
+
+        return `
+            <svg width="${icon_display_size}" height="${icon_display_size}" viewBox="0 0 ${icon_display_size} ${icon_display_size}">
+                <rect x="0" y="0" width="${icon_display_size}" height="${icon_display_size}" rx="${borderRadius}" ry="${borderRadius}" fill="${backgroundColor}"/>
+                <svg x="${effectivePadding}" y="${effectivePadding}" width="${icon_content_size}" height="${icon_content_size}" viewBox="${originalViewBox}" preserveAspectRatio="xMidYMid meet">
+                    ${svgInnerContent}
+                </svg>
+            </svg>
+        `
     })
 
-    // Prepare composite operations
-    const composites = []
-    for (let i = 0; i < individualIconComposites.length; i++) {
-        const col = i % max_icons_in_row
-        const row = Math.floor(i / max_icons_in_row)
+    const individualIconSVGs = await Promise.all(individualIconSVGPromises)
+    const filteredIndividualSVGs = individualIconSVGs.filter(Boolean)
 
-        const x = col * (backgroundContainerSize + gap)
-        const y = row * (backgroundContainerSize + gap)
+    const numRows = Math.ceil(filteredIndividualSVGs.length / maxIconsInRow)
+    const actualMaxCols = Math.min(maxIconsInRow, filteredIndividualSVGs.length)
 
-        composites.push({
-            input: individualIconComposites[i],
-            top: y,
-            left: x
-        })
+    const finalWidth = actualMaxCols * icon_display_size + (actualMaxCols > 0 ? (actualMaxCols - 1) * gap : 0)
+    const finalHeight = numRows * icon_display_size + (numRows > 0 ? (numRows - 1) * gap : 0)
+
+    let combinedSVGContent = ''
+    for (let i = 0; i < filteredIndividualSVGs.length; i++) {
+        const col = i % maxIconsInRow
+        const row = Math.floor(i / maxIconsInRow)
+
+        const x = col * (icon_display_size + gap)
+        const y = row * (icon_display_size + gap)
+
+        // Wrap each individual SVG in a <g> element and translate it
+        combinedSVGContent += `<g transform="translate(${x},${y})">${filteredIndividualSVGs[i]}</g>`
     }
 
-    // Composite all individual icon images onto the main canvas
-    return await compositeImage.composite(composites)
-        .webp()
-        .toBuffer()
+    return `
+        <svg width="${finalWidth}" height="${finalHeight}" viewBox="0 0 ${finalWidth} ${finalHeight}" xmlns="http://www.w3.org/2000/svg">
+            ${combinedSVGContent}
+        </svg>
+    `
 }
+
 
 // CORS Middleware: Enables cross-origin requests from your frontend to this backend.
 // This is essential if your frontend is served from a different domain/port than your backend.
@@ -185,26 +162,25 @@ app.use((req, res, next) => {
 // Route for generating and serving combined SVG images
 // This route is asynchronous because it calls `generateSvg` which performs fetches.
 app.get('/icons', async (req, res) => {
-    const i = req.query.i // Get icon names from 'i' query parameter
-    if (!i) {
-        // If no icons are specified, return a 400 Bad Request error
-        return res.status(400).send("You didn't specify any icons! Use '?i=icon1,icon2'")
-    }
+  const i = req.query.i // Get icon names from 'i' query parameter
+  if (!i) {
+      // If no icons are specified, return a 400 Bad Request error
+      return res.status(400).send("You didn't specify any icons! Use '?i=icon1,icon2'")
+  }
 
-    if (max_icons_in_row < 1 || max_icons_in_row > 50) {
-        // Validate perLine parameter
-        return res.status(400).send('Icons per line must be a number between 1 and 50')
-    }
-    // Split the comma-separated icon names to array
-    const iSplit = i.split(',').map(name => name)
+  if (max_icons_in_row < 1 || max_icons_in_row > 50) {
+      // Validate perLine parameter
+      return res.status(400).send('Icons per line must be a number between 1 and 50')
+  }
+  // Split the comma-separated icon names to array
+  const iSplit = i.split(',').map(name => name)
 
-    try {
-      const imageBuffer = await generateRasterImage(iSplit, max_icons_in_row)
-      // Set the Content-Type based on the output format
-      res.setHeader('Content-Type', 'image/webp')
-      res.send(imageBuffer)
+  try {
+      const svgString = await generateCombinedSvg(iSplit, max_icons_in_row)
+      res.setHeader('Content-Type', 'image/svg+xml')
+      res.send(svgString)
   } catch (error) {
-      console.error("Error generating raster image:", error)
+      console.error("Error generating combined SVG:", error)
       res.status(500).send("Error generating image. Please try again later.")
   }
 })
@@ -217,7 +193,7 @@ app.get('/api/icons', (req, res) => {
 
 
 // app.listen(3000, () => { console.log('Server is listening on port 3000') }) // replaced by ViteExpress
-ViteExpress.listen(app, 3000, async () =>
-    await fetchIconMetadata(),
-    console.log("Server is listening on:\n\nhttp://localhost:3000\n\n"),
-  )
+ViteExpress.listen(app, 3000, async () => {
+    await fetchIconMetadata()
+    console.log("Server is listening on:\n\nhttp://localhost:3000\n\n")
+})

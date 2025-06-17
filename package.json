@@ -12,6 +12,7 @@
     "lint": "eslint . --fix"
   },
   "dependencies": {
+    "cheerio": "^1.1.0",
     "express": "^5.1.0",
     "pinia": "^3.0.1",
     "sharp": "^0.34.2",
