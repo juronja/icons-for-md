@@ -113,7 +113,7 @@ pipeline {
         }
         stage('Deploy MAIN on HOSTING-PROD') {
             environment {
-                HOSTING_CREDS = credentials('ssh-hosting-prod')
+                HOSTING_CREDS = credentials('creds-hosting-prod')
             }
             when {
                 branch "main" 
