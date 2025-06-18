@@ -10,7 +10,7 @@ const app = express() // Initialize the express server
 const max_icons_in_row = 15
 const icon_display_size = 48 // This will be the viewBox size for each icon in the combined SVG
 const icon_content_size = 36 // This is the actual size you want the icon SVG to be within its container
-const gap = 5 // Gap between icons
+const gap = 8 // Gap between icons
 
 
 // Global variables to store icon metadata fetched from GitHub
@@ -109,7 +109,7 @@ async function generateCombinedSvg(iconNames, maxIconsInRow) {
   const validIconNames = iconNames.filter(name => globalIconNameList.includes(name))
 
   const backgroundColor = 'rgb(36, 41, 56)'
-  const borderRadius = 8
+  const borderRadius = 10
   const effectivePadding = (icon_display_size - icon_content_size) / 2
 
   const individualIconSVGPromises = validIconNames.map(async name => {
