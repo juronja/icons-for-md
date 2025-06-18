@@ -1,6 +1,8 @@
 import express from 'express'
 import ViteExpress from "vite-express"
 import * as cheerio from 'cheerio'
+import { optimize } from 'svgo'
+
 
 
 // Start express server
@@ -20,6 +22,21 @@ let globalIconNameList = []
 const svgContentCache = new Map() // This will store iconName -> svgContent
 // Define TTL: 3 days in milliseconds
 const CACHE_TTL = 7 * 24 * 60 * 60 * 1000 // 7 days in milliseconds
+
+// Define your SVGO configuration
+const svgoConfig = {
+  plugins: [
+    {
+      name: "removeEditorsNSData",
+      params: {
+        additionalNamespaces: [
+          "https://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd",
+          "https://www.inkscape.org/namespaces/inkscape",
+        ]
+      }
+    }
+  ],
+}
 
 
 // Middleware
@@ -65,24 +82,24 @@ async function fetchIcons(iconName) {
   }
 
   // If item is expired or not in cache, fetch it
-  // console.log(`Fetching SVG for ${iconName} from source (cache miss or expired)`) // Uncomment for debugging
   const iconUrl = `https://raw.githubusercontent.com/homarr-labs/dashboard-icons/main/svg/${iconName}.svg`
   try {
     const response = await fetch(iconUrl)
     if (!response.ok) {
       console.warn(`Failed to fetch SVG for ${iconName}: ${response.status} ${response.statusText}`)
-      // If fetch fails, we might still want to return a stale item if it exists,
-      // rather than null. For now, we return null as per original logic.
       return null
     }
     const svgStringContent = await response.text()
 
+    // --- USE SVGO TO SANITIZE AND OPTIMIZE ---
+    const { data: optimizedSvg } = optimize(svgStringContent, svgoConfig)
+
     // Store the new content with a fresh timestamp
     svgContentCache.set(iconName, {
-      content: svgStringContent,
+      content: optimizedSvg,
       timestamp: currentTime
     })
-    return svgStringContent
+    return optimizedSvg
   } catch (error) {
     console.error(`Error fetching SVG for ${iconName}:`, error)
     return null
