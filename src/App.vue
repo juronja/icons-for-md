@@ -8,9 +8,12 @@ const store = useDefinitionsStore()
 
 <template>
   <header>
-    <div class="logo">
-      icons-for.md
-      <!-- <img alt="UTM Builder logo" src="@/assets/logo.svg" width="200" height="35" /> -->
+    <div class="logo-slogan">
+      <div class="logo">
+        icons-for.md
+        <!-- <img alt="UTM Builder logo" src="@/assets/logo.svg" width="200" height="35" /> -->
+      </div>
+      <h1>Custom icon reference for .md files</h1>
     </div>
     <div class="search-box">
       <i class="bi bi-search"></i>
@@ -45,11 +48,13 @@ const store = useDefinitionsStore()
   display: flex;
   padding: 0.5rem 1rem;
   gap: 0.5rem;
+  height: 3.5rem;
   width: 100%;
   background-color: var(--color-input-background);
   border: 1px solid var(--color-border);
   border-radius: 0.25rem;
   transition: 0.15s ease-in-out;
+  align-items: center;
 }
 
 .search-box:focus-within {
@@ -78,12 +83,16 @@ const store = useDefinitionsStore()
   font-size: 1.1em;
 }
 
+.logo-slogan {
+  display: flex;
+  flex-direction: column;
+}
+
 .logo {
-  /* display: flex;
-  align-items: center; */
   color: var(--color-primary);
   font-family: "Micro 5", sans-serif;
-  font-size: 3rem;
+  font-size: 3.9rem;
+  line-height: 2.5rem;
   white-space: nowrap;
 }
 
@@ -117,35 +126,21 @@ const store = useDefinitionsStore()
 /* Responsive layout */
 @media screen and (max-width: 480px) {
 
-  .logo {
-    font-size: 1.1rem;
-  }
-
   .search-box {
     padding: 0.3rem 0.5rem; /* Combined padding for icon and text */
-    gap: 0.3rem; /* Space between icon and input */
     width: 100%;
+    height: 3rem;
+    margin-bottom: calc(var(--section-gap) / 2);
   }
 
   .search-box input {
-    font-size: 0.6rem;
+    font-size: 0.8rem;
   }
 
   .search-box i {
-  font-size: 0.75em;
+  font-size: 1rem;
   }
 
-  .nav-overlay {
-    position: fixed;
-    top: calc(var(--app-padding-top) + var(--header-height));
-    right: 0;
-    bottom: 0;
-    left: 0;
-    padding: 3rem 1.75rem;
-    z-index: 1;
-    background-color: var(--color-background);
-    height: calc(100vh - var(--app-padding-top) - var(--header-height));
-  }
 }
 
 

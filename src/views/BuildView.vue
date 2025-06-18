@@ -29,14 +29,12 @@ async function toClipboard(item) {
   }
 }
 
-
 </script>
 
 <template>
-  <h1>Build your custom icon reference for .md</h1>
   <div class="wrapper">
     <div class="section section-box">
-      <h2>Your Link</h2>
+      <h2>Copy this link into your .md file</h2>
       <div class="output">
         <p> {{ store.generatedUrl ? store.generatedUrl : 'Select icons to generate an URL here ...' }} </p>
         <!-- add copy validation on the button -->
@@ -44,7 +42,10 @@ async function toClipboard(item) {
       </div>
     </div>
     <div class="section section-box">
-      <h2>Selected Icons (Click to remove)</h2>
+      <div class="title-flex-row">
+        <h2>Selected Icons</h2>
+        <p>(Click icon to remove)</p>
+      </div>
       <div class="selected-icons-row">
         <!-- Display selected icons visually - just images -->
         <template v-if="store.selectedIcons.length > 0">
@@ -90,15 +91,6 @@ async function toClipboard(item) {
   align-items: flex-start; */
 }
 
-.section {
-  display: flex;
-  flex-direction: column;
-  /* flex-wrap: wrap;
-  flex: 0 0 auto; */
-  padding: calc(var(--gutter-x)* .5);
-  margin-top: var(--section-gap);
-}
-
 .selected-icons-row {
   display: flex;
   flex-direction: row;
@@ -118,6 +110,12 @@ async function toClipboard(item) {
   background-color: rgb(36, 41, 56);
   border-radius: 0.5rem;
   cursor: pointer; /* Ensure clickability is visible */
+}
+
+.available-icons-row {
+  max-height: 40rem;
+  overflow-y: auto;
+  padding-right: 10px;
 }
 
 .available-icons-row ul {
@@ -205,6 +203,21 @@ input, select {
   margin-right: 0.75rem;
 
 }
+
+.title-flex-row {
+  display: flex;
+  flex-direction: row;
+  gap: 0.5rem;
+  align-items: baseline;
+}
+
+.title-flex-row p {
+  margin-bottom: calc(var(--gutter-y)* .5);
+  font-size: 0.75rem;
+}
+
+
+
 
 
 /* Responsive layout */
