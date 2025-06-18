@@ -43,9 +43,11 @@ export const useDefinitionsStore = defineStore('definitions', () => {
     if (selectedIcons.value == '' ) {
         return ''
       } else {
-        return (`${baseUrl.value}/icons?i=${selectedIcons.value.join(',')}`)
+        return (`[![icons-for-md](${baseUrl.value}/icons?i=${selectedIcons.value.join(',')})](${baseUrl.value})`)
       }
   })
+
+
 
 
   //********* FUNCTIONS **********//
