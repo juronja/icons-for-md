@@ -73,7 +73,7 @@ async function toClipboard(item) {
           </draggable>
         </template>
         <div v-else>
-          <p>No icons selected yet.</p>
+          <p class="no-icons-selected">No icons selected yet.</p>
         </div>
       </div>
       <hr>
@@ -90,7 +90,7 @@ async function toClipboard(item) {
           </ul>
         </div>
         <div v-else>
-          <p>No matching icons found. Try a different search query or clear the search box.</p>
+          <p class="no-icons-selected">No matching icons found. Try a different search query or clear the search box.</p>
         </div>
       </div>
     </div>
@@ -163,9 +163,9 @@ async function toClipboard(item) {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Horizontal-offset Vertical-offset Blur-radius Spread-radius Color */}
 
 .available-icons-row {
-  max-height: 40rem;
+  max-height: 35rem;
   overflow-y: auto;
-  padding-right: 10px;
+  padding: 15px 10px 0 0;
 }
 
 .available-icons-row ul {
@@ -266,6 +266,9 @@ input, select {
   font-size: 0.75rem;
 }
 
+.no-icons-selected {
+  color: var(--color-warning);
+}
 
 /* Responsive layout */
 @media screen and (max-width: 480px) {
