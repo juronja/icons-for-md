@@ -7,7 +7,6 @@ import draggable from 'vuedraggable'
 // States
 const store = useDefinitionsStore()
 const isCopied = ref(false)
-const drag = ref(false)
 
 // Get definitions
 onBeforeMount( () => {
@@ -66,7 +65,7 @@ async function toClipboard(item) {
             class="selected-icons-list"
           >
             <template #item="{ element: icon }">
-              <li class="selected-icon-item" @click="store.removeSelectedIcon(icon)" id="icon">
+              <li class="selected-icon-item" id="icon">
                 <img :src="`https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/${icon}.svg`" :alt="icon" class="icon-img" />
                 <span class="tag-del" @click.stop="store.removeSelectedIcon(icon)">x</span>
               </li>
@@ -76,21 +75,6 @@ async function toClipboard(item) {
         <div v-else>
           <p>No icons selected yet.</p>
         </div>
-        <draggable
-          v-model="myArray"
-          group="people"
-          @start="drag=true"
-          @end="drag=false"
-          item-key="id">
-          <template #item="{element}">
-            <ul>
-              <li v-for="icon in store.selectedIcons" :key="icon" class="selected-icon-item">
-                <img :src="`https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/${icon}.svg`" :alt="icon" class="icon-img" />
-                <span class="tag-del" @click.stop="store.removeSelectedIcon(icon)">x</span>
-              </li>
-            </ul>
-          </template>
-        </draggable>
       </div>
       <hr>
       <h2>Available Icon Tags</h2>
@@ -138,7 +122,7 @@ async function toClipboard(item) {
   display: flex; /* Kept flex for centering potential images */
   align-items: center;
   justify-content: center;
-  padding: 0.2rem; /* Reduced padding */
+  padding: var(--icon-padding); /* Reduced padding */
   border: none;
   background-color: rgb(36, 41, 56);
   border-radius: 0.5rem;
@@ -149,13 +133,22 @@ async function toClipboard(item) {
   cursor: grabbing; /* Feedback when dragging */
 }
 
+.sortable-ghost {
+  opacity: 0.5; /* Makes the placeholder semi-transparent */
+  background-color: #555; /* Give it a distinct background color */
+  border: 2px dashed #999; /* Add a dashed border to make it even clearer */
+  /* You can also match the size of your actual items. (48px img + 2*0.2rem padding) */
+  width: calc( var(--icon-edge-size) + 2 * var(--icon-padding) );
+  height: calc( var(--icon-edge-size) + 2 * var(--icon-padding) );
+}
+
 .tag-del {
   position: absolute;
   top: 0px;
   right: 0px;
   z-index: 10; /* Ensure it's above the image */
   background-color: var(--color-danger);
-  color: white;
+  color: var(--color-white);
   width: 0.9rem;
   height: 0.9rem;
   align-items: center;
@@ -179,9 +172,13 @@ async function toClipboard(item) {
   justify-content: center;
 }
 
+.available-icons-row ul li:hover {
+  cursor: pointer;
+}
+
 .icon-img {
-  width: 48px; /* Slightly increased size for better visibility/clickability */
-  height: 48px;
+  width: var(--icon-edge-size);
+  height: var(--icon-edge-size);
   flex-shrink: 0;
 }
 
@@ -224,10 +221,6 @@ ul li {
   background-color: var(--color-input-background);
   border-radius: 0.25rem;
 }
-
-/* ul li:hover {
-  cursor: pointer;
-} */
 
 input, select {
   padding: var(--input-padding);
