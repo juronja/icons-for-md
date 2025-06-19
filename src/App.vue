@@ -13,7 +13,7 @@ const store = useDefinitionsStore()
         icons for md
         <!-- <img alt="UTM Builder logo" src="@/assets/logo.svg" width="200" height="35" /> -->
       </div>
-      <h1>Icon reference for markup files</h1>
+      <h1>Icon reference for your markup files</h1>
     </div>
     <div class="search-box">
       <i class="bi bi-search"></i>
@@ -48,7 +48,7 @@ const store = useDefinitionsStore()
   display: flex;
   padding: 0.5rem 1rem;
   gap: 0.5rem;
-  height: 3.5rem;
+  height: 3.25rem;
   width: 100%;
   background-color: var(--color-input-background);
   border: 1px solid var(--color-border);
@@ -94,7 +94,7 @@ const store = useDefinitionsStore()
   color: var(--color-primary);
   font-family: "Micro 5", sans-serif;
   font-size: 3.6rem;
-  line-height: 2.5rem;
+  line-height: 2.25rem;
   padding-left: 0.2rem;
   white-space: nowrap;
 }
