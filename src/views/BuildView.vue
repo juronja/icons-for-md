@@ -44,14 +44,15 @@ async function toClipboard(item) {
     <div class="section section-box">
       <div class="title-flex-row">
         <h2>Selected Icons</h2>
-        <p>(Click icon to remove)</p>
+        <p>(Drag to reorder)</p>
       </div>
       <div class="selected-icons-row">
         <!-- Display selected icons visually - just images -->
         <template v-if="store.selectedIcons.length > 0">
           <ul>
-            <li v-for="icon in store.selectedIcons" :key="icon" class="selected-icon-item" @click="store.removeSelectedIcon(icon)">
+            <li v-for="icon in store.selectedIcons" :key="icon" class="selected-icon-item">
               <img :src="`https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/${icon}.svg`" :alt="icon" class="icon-img" />
+              <span class="tag-del" @click.stop="store.removeSelectedIcon(icon)">x</span>
             </li>
           </ul>
         </template>
@@ -101,7 +102,7 @@ async function toClipboard(item) {
 }
 
 .selected-icon-item {
-  /* Simplified styling for just the image */
+  position: relative;
   display: flex; /* Kept flex for centering potential images */
   align-items: center;
   justify-content: center;
@@ -109,8 +110,28 @@ async function toClipboard(item) {
   border: none;
   background-color: rgb(36, 41, 56);
   border-radius: 0.5rem;
-  cursor: pointer; /* Ensure clickability is visible */
+  cursor: crosshair;
 }
+
+.tag-del {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  z-index: 10; /* Ensure it's above the image */
+  background-color: var(--color-danger);
+  color: white;
+  width: 0.9rem;
+  height: 0.9rem;
+  align-items: center;
+  justify-content: center;
+  padding: 0.05rem 0.2rem;
+  box-shadow: 23rem;
+  font-size: 0.8rem;
+  font-weight: bold;
+  border-radius: 0.5rem;
+  line-height: 0.9;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Horizontal-offset Vertical-offset Blur-radius Spread-radius Color */}
 
 .available-icons-row {
   max-height: 40rem;
@@ -168,9 +189,9 @@ ul li {
   border-radius: 0.25rem;
 }
 
-ul li:hover {
+/* ul li:hover {
   cursor: pointer;
-}
+} */
 
 input, select {
   padding: var(--input-padding);
@@ -215,9 +236,6 @@ input, select {
   margin-bottom: calc(var(--gutter-y)* .5);
   font-size: 0.75rem;
 }
-
-
-
 
 
 /* Responsive layout */
