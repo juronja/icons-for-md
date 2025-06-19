@@ -1,11 +1,13 @@
 <script setup>
 import { onBeforeMount, ref } from 'vue'
 import { useDefinitionsStore } from '@/stores/definitions'
+import draggable from 'vuedraggable'
 
 
 // States
 const store = useDefinitionsStore()
 const isCopied = ref(false)
+const drag = ref(false)
 
 // Get definitions
 onBeforeMount( () => {
@@ -49,16 +51,46 @@ async function toClipboard(item) {
       <div class="selected-icons-row">
         <!-- Display selected icons visually - just images -->
         <template v-if="store.selectedIcons.length > 0">
-          <ul>
+          <!-- <ul>
             <li v-for="icon in store.selectedIcons" :key="icon" class="selected-icon-item">
               <img :src="`https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/${icon}.svg`" :alt="icon" class="icon-img" />
               <span class="tag-del" @click.stop="store.removeSelectedIcon(icon)">x</span>
             </li>
-          </ul>
+          </ul> -->
+          <draggable
+            v-model="store.selectedIcons"
+            @start="handleDragStart"
+            @end="handleDragEnd"
+            item-key="id"
+            tag="ul"
+            class="selected-icons-list"
+          >
+            <template #item="{ element: icon }">
+              <li class="selected-icon-item" @click="store.removeSelectedIcon(icon)" id="icon">
+                <img :src="`https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/${icon}.svg`" :alt="icon" class="icon-img" />
+                <span class="tag-del" @click.stop="store.removeSelectedIcon(icon)">x</span>
+              </li>
+            </template>
+          </draggable>
         </template>
         <div v-else>
           <p>No icons selected yet.</p>
         </div>
+        <draggable
+          v-model="myArray"
+          group="people"
+          @start="drag=true"
+          @end="drag=false"
+          item-key="id">
+          <template #item="{element}">
+            <ul>
+              <li v-for="icon in store.selectedIcons" :key="icon" class="selected-icon-item">
+                <img :src="`https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/${icon}.svg`" :alt="icon" class="icon-img" />
+                <span class="tag-del" @click.stop="store.removeSelectedIcon(icon)">x</span>
+              </li>
+            </ul>
+          </template>
+        </draggable>
       </div>
       <hr>
       <h2>Available Icon Tags</h2>
@@ -110,7 +142,11 @@ async function toClipboard(item) {
   border: none;
   background-color: rgb(36, 41, 56);
   border-radius: 0.5rem;
-  cursor: crosshair;
+  cursor: grab;
+}
+
+.selected-icon-item:active {
+  cursor: grabbing; /* Feedback when dragging */
 }
 
 .tag-del {
