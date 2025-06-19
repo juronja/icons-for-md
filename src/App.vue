@@ -10,10 +10,10 @@ const store = useDefinitionsStore()
   <header>
     <div class="logo-slogan">
       <div class="logo">
-        icons-for.md
+        icons for md
         <!-- <img alt="UTM Builder logo" src="@/assets/logo.svg" width="200" height="35" /> -->
       </div>
-      <h1>Custom icon reference for .md files</h1>
+      <h1>Icon reference for markup files</h1>
     </div>
     <div class="search-box">
       <i class="bi bi-search"></i>
@@ -86,13 +86,16 @@ const store = useDefinitionsStore()
 .logo-slogan {
   display: flex;
   flex-direction: column;
+  align-items: center;
+
 }
 
 .logo {
   color: var(--color-primary);
   font-family: "Micro 5", sans-serif;
-  font-size: 3.9rem;
+  font-size: 3.6rem;
   line-height: 2.5rem;
+  padding-left: 0.2rem;
   white-space: nowrap;
 }
 
