@@ -15,13 +15,6 @@ pipeline {
     }
     options { buildDiscarder(logRotator(numToKeepStr: '10')) } // keeping only n builds
     stages {
-//        stage('Innit ext script') {
-//            steps {
-//                script {
-//                    xgs = load 'jenkins.groovy'
-//                }
-//            }
-//        }
         stage('Build DEV for Nexus') {
             environment {
                 NEXUS_CREDS = credentials('nexus-creds')
@@ -154,7 +147,7 @@ pipeline {
                 script {
                     echo "Copy files to ansible control node ..."
                     sshagent(['ssh-ansible']) {
-                        sh "scp -r -o StrictHostKeyChecking=no ansible juronja@$ANSIBLE_IP:~/apps/ansible/icons-for-md"
+                        sh "scp -r -o StrictHostKeyChecking=no ansible/ juronja@$ANSIBLE_IP:~/apps/ansible/icons-for-md"
                         withCredentials([sshUserPrivateKey(credentialsId: 'ssh-aws-ec2-id-amazon', keyFileVariable: 'keyfile', usernameVariable: 'user')]) {
                             sh "scp ${keyfile} juronja@$ANSIBLE_IP:~/.ssh/id_amazon.pem"
                         }
