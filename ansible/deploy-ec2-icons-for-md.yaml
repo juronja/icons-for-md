@@ -1,0 +1,58 @@
+---
+- name: Install dependencies
+  hosts: tag_Environment_prod
+  become: yes # This line tells Ansible to use privilege escalation (sudo) for all tasks
+  vars_files:
+    - vars/variables.yaml  
+  tasks:
+    - name: install docker
+      dnf:
+        name:
+        - docker
+        update_cache: true
+        state: present
+    - name: Start docker service
+      systemd:
+        name: docker
+        state: started
+    - name: Add user to docker group
+      user:
+        name: "{{ec2_user}}"
+        groups: docker
+        append: true
+      register: user
+    - name: Reconnect to server # Must reset connection for append group to take effect
+      meta: reset_connection
+    - name: Create directory for compose
+      file:
+        path: /usr/local/lib/docker/cli-plugins/
+        state: directory
+    - name: Install docker compose
+      get_url:
+        url: https://github.com/docker/compose/releases/latest/download/docker-compose-linux-{{lookup('pipe', 'uname -m')}}
+        dest: /usr/local/lib/docker/cli-plugins/docker-compose
+        mode: 755
+- name: Start docker containers
+  hosts: tag_Environment_prod
+  vars_files:
+    - vars/variables.yaml
+  tasks:
+    - name: Create directory for project
+      file:
+        path: "{{location}}/{{project}}/"
+        state: directory
+    - name: Fetch docker compose base
+      get_url:
+        url: https://raw.githubusercontent.com/juronja/{{project}}/refs/heads/main/compose.base.yaml
+        dest: "{{location}}/{{project}}/"
+    - name: Fetch docker compose prod
+      get_url:
+        url: https://raw.githubusercontent.com/juronja/{{project}}/refs/heads/main/compose.prod.yaml
+        dest: "{{location}}/{{project}}/"
+    - name: Start docker compose
+      community.docker.docker_compose_v2:
+        project_src: "{{location}}/{{project}}/"
+        files:
+          - compose.base.yaml
+          - compose.prod.yaml
+        state: present
