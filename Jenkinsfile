@@ -167,7 +167,7 @@ pipeline {
                     echo "Execute ansible playbook"
                     def remote = [:]
                     remote.name = "ansible"
-                    remote.host = "$ANSIBLE_IP"
+                    remote.host = '$ANSIBLE_IP'
                     remote.allowAnyHosts = true
 
                     withCredentials([sshUserPrivateKey(credentialsId: 'ssh-ansible', keyFileVariable: 'keyfile', usernameVariable: 'user')]) {
