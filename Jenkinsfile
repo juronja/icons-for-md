@@ -167,14 +167,14 @@ pipeline {
                     echo "Execute ansible playbook"
                     def remote = [:]
                     remote.name = "ansible"
-                    remote.host = '$ANSIBLE_IP'
+                    remote.host = "$ANSIBLE_IP"
                     remote.allowAnyHosts = true
 
                     withCredentials([sshUserPrivateKey(credentialsId: 'ssh-ansible', keyFileVariable: 'keyfile', usernameVariable: 'user')]) {
                         remote.user = user
                         remote.identityFile = keyfile
 
-                        sshCommand remote: remote, command: "ls -l"
+                        sshCommand remote: remote, command: "ansible-playbook ~/apps/ansible/icons-for-md/deploy-ec2-icons-for-md.yaml"
                     }
                 }
             }
