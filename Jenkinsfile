@@ -7,7 +7,7 @@ pipeline {
         IMAGE_NAME = "icons-for-md"
         PROJECT_NAME = "icons-for-md"
         IMAGE_TAG_DEV = "dev-latest"
-        ANSIBLE_IP = credentials('ip-ansible')
+        IP_ANSIBLE = credentials('ip-ansible')
         // Repositories
         DOCKERH_REPO = "juronja"
         // NEXUS_REPO = "192.168.84.20:8082"
@@ -108,16 +108,27 @@ pipeline {
         }
         stage('Deploy MAIN on HOSTING-PROD') {
             environment {
-                HOSTING_CREDS = credentials('creds-hosting-prod')
+                IP_HOSTING_PROD = credentials('ip-hosting-prod')
             }
             when {
                 branch "main" 
             }
             steps {
-                script { // sshagent must be in script block
-                    sshagent(['ssh-hosting-prod']) {
-                        echo "Deploying Docker container on HOSTING-PROD ..."
-                        sh "ssh -o StrictHostKeyChecking=no $HOSTING_CREDS_USR@$HOSTING_CREDS_PSW 'bash -c \"\$(wget -qLO - https://raw.githubusercontent.com/juronja/icons-for-md/refs/heads/main/compose-commands.sh)\"'"
+                script {
+                    echo "Deploying Docker container on HOSTING-PROD ..."
+                    // sshagent(['ssh-hosting-prod']) {
+                    //     sh "ssh -o StrictHostKeyChecking=no $HOSTING_CREDS_USR@$HOSTING_CREDS_PSW 'bash -c \"\$(wget -qLO - https://raw.githubusercontent.com/juronja/icons-for-md/refs/heads/main/compose-commands.sh)\"'"
+                    // }
+                    def remote = [:]
+                    remote.name = "hosting-prod"
+                    remote.host = IP_HOSTING_PROD
+                    remote.allowAnyHosts = true
+
+                    withCredentials([sshUserPrivateKey(credentialsId: 'creds-hosting-prod', keyFileVariable: 'keyfile', usernameVariable: 'user')]) {
+                        remote.user = user
+                        remote.identityFile = keyfile
+
+                        sshScript remote: remote, script: "compose-commands.sh"
                     }
                 }
             }
@@ -137,18 +148,15 @@ pipeline {
         //     }
         // }
         stage('Deploy MAIN on EC2') {
-            environment {
-                EC2_CREDS = credentials('ssh-aws-ec2-id-amazon')
-            }
             when {
                 branch "main" 
             }
             steps {
                 script {
                     echo "Copy files to ansible control node ..."
-                    sshagent(['ssh-ansible']) {
+                    sshagent(['ssh-ansible']) { // sshagent must be in script block
                         sh 'scp -r -o StrictHostKeyChecking=no ansible/* juronja@$ANSIBLE_IP:~/apps/ansible/icons-for-md/'
-                        withCredentials([sshUserPrivateKey(credentialsId: 'ssh-aws-ec2-id-amazon', keyFileVariable: 'keyfile', usernameVariable: 'user')]) {
+                        withCredentials([sshUserPrivateKey(credentialsId: 'ssh-aws-ec2-id-amazon', keyFileVariable: 'keyfile')]) {
                         
                             // Check if the file exists on the remote server
                             def fileExists = sh(script: 'ssh juronja@$ANSIBLE_IP "[ -f ~/.ssh/id_amazon.pem ]"', returnStatus: true)
@@ -167,7 +175,7 @@ pipeline {
                     echo "Execute ansible playbook"
                     def remote = [:]
                     remote.name = "ansible"
-                    remote.host = ANSIBLE_IP
+                    remote.host = IP_ANSIBLE
                     remote.allowAnyHosts = true
 
                     withCredentials([sshUserPrivateKey(credentialsId: 'ssh-ansible', keyFileVariable: 'keyfile', usernameVariable: 'user')]) {
