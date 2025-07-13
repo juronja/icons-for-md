@@ -152,13 +152,13 @@ pipeline {
                             // sh 'scp $keyfile juronja@$ANSIBLE_IP:~/.ssh/id_amazon.pem'
                         
                             // Check if the file exists on the remote server
-                            def fileExists = sh(script: 'ssh juronja@$ANSIBLE_IP '[ -f "~/.ssh/id_amazon.pem" ]'', returnStatus: true)
+                            def fileExists = sh(script: 'ssh juronja@$ANSIBLE_IP '[ -f ~/.ssh/id_amazon.pem ]'', returnStatus: true)
 
                             if (fileExists != 0) { // If the command returns non-zero status, the file does NOT exist
                                 echo "PEM file does not exist on remote, copying it now..."
                                 sh 'scp $keyfile juronja@$ANSIBLE_IP:~/.ssh/id_amazon.pem'
                                 // Set the correct permissions after copying
-                                sh 'ssh juronja@\$ANSIBLE_IP 'chmod 400 "~/.ssh/id_amazon.pem"''
+                                sh 'ssh juronja@$ANSIBLE_IP 'chmod 400 ~/.ssh/id_amazon.pem''
                             } else {
                                 echo "PEM file already exists on remote, skipping copy."
                             }
