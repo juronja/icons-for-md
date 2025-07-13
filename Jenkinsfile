@@ -117,7 +117,7 @@ pipeline {
                 script { // sshagent must be in script block
                     sshagent(['ssh-hosting-prod']) {
                         echo "Deploying Docker container on HOSTING-PROD ..."
-                        sh "ssh -o StrictHostKeyChecking=no $HOSTING_CREDS_USR@$HOSTING_CREDS_PSW 'bash -c \"\$(wget -qLO - https://raw.githubusercontent.com/juronja/icons-for-md/refs/heads/main/compose-commands.sh)\"'"
+                        sh 'ssh -o StrictHostKeyChecking=no $HOSTING_CREDS_USR@$HOSTING_CREDS_PSW 'bash -c \"\$(wget -qLO - https://raw.githubusercontent.com/juronja/icons-for-md/refs/heads/main/compose-commands.sh)\"''
                     }
                 }
             }
@@ -149,7 +149,7 @@ pipeline {
                     sshagent(['ssh-ansible']) {
                         sh "scp -r -o StrictHostKeyChecking=no ansible/* juronja@$ANSIBLE_IP:~/apps/ansible/icons-for-md/"
                         withCredentials([sshUserPrivateKey(credentialsId: 'ssh-aws-ec2-id-amazon', keyFileVariable: 'keyfile', usernameVariable: 'user')]) {
-                            sh "scp ${keyfile} juronja@$ANSIBLE_IP:~/.ssh/id_amazon.pem"
+                            sh 'scp $keyfile juronja@$ANSIBLE_IP:~/.ssh/id_amazon.pem'
                         }
                     }
                 }
