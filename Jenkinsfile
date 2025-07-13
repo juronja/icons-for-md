@@ -157,12 +157,24 @@ pipeline {
                                 echo "PEM file does not exist on remote, copying it now..."
                                 sh 'scp $keyfile juronja@$ANSIBLE_IP:~/.ssh/id_amazon.pem'
                                 // Set the correct permissions after copying
-                                sh 'ssh juronja@$ANSIBLE_IP "chmod 400 ~/.ssh/id_amazon.pem"' // Changed to double quotes for ANSIBLE_IP interpolation
+                                sh 'ssh juronja@$ANSIBLE_IP "chmod 400 ~/.ssh/id_amazon.pem"'
                             } else {
                                 echo "PEM file already exists on remote, skipping copy."
                             }
                         
                         }
+                    }
+                    echo "Execute ansible playbook"
+                    def remote = [:]
+                    remote.name = "ansible"
+                    remote.host = $ANSIBLE_IP
+                    remote.allowAnyHosts = true
+
+                    withCredentials([sshUserPrivateKey(credentialsId: 'ssh-aws-ec2-id-amazon', keyFileVariable: 'keyfile', usernameVariable: 'user')]) {
+                        remote.user = user
+                        remote.identityFile = keyfile
+                        
+                        sshCommand remote: remote, command: "ls -l"
                     }
                 }
             }
