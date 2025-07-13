@@ -147,7 +147,7 @@ pipeline {
                 script {
                     echo "Copy files to ansible control node ..."
                     sshagent(['ssh-ansible']) {
-                        sh "scp -r -o StrictHostKeyChecking=no ansible/ juronja@$ANSIBLE_IP:~/apps/ansible/icons-for-md"
+                        sh "scp -r -o StrictHostKeyChecking=no ansible/ juronja@$ANSIBLE_IP:~/apps/ansible/icons-for-md/"
                         withCredentials([sshUserPrivateKey(credentialsId: 'ssh-aws-ec2-id-amazon', keyFileVariable: 'keyfile', usernameVariable: 'user')]) {
                             sh "scp ${keyfile} juronja@$ANSIBLE_IP:~/.ssh/id_amazon.pem"
                         }
