@@ -174,8 +174,7 @@ pipeline {
                         remote.user = user
                         remote.identityFile = keyfile
 
-                        sshCommand remote: remote, command: "cd ~/apps/ansible/icons-for-md/"
-                        sshCommand remote: remote, command: "ansible-playbook -i inventory/inventory_aws_ec2.yaml deploy-ec2-icons-for-md.yaml"
+                        sshCommand remote: remote, command: "cd ~/apps/ansible/icons-for-md/ && ansible-playbook -i inventory/inventory_aws_ec2.yaml deploy-ec2-icons-for-md.yaml"
                     }
                 }
             }
