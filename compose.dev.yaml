@@ -9,6 +9,5 @@ services:
       file: compose.base.yaml
       service: app
     image: 192.168.84.20:8082/icons-for-md:dev-latest
-    pull_policy: always # Compose always pulls the image from the registry.
     ports:
       - 8402:3000 # These ports are in format <host-port>:<container-port>

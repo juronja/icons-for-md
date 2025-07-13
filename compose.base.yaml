@@ -5,4 +5,5 @@
 services:
   app:
     container_name: icons-app
+    pull_policy: always # Compose always pulls the image from the registry.
     restart: unless-stopped

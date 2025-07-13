@@ -9,6 +9,5 @@ services:
       file: compose.base.yaml
       service: app
     image: juronja/icons-for-md:latest
-    pull_policy: always # Compose always pulls the image from the registry.
     ports:
       - 8402:3000 # These ports are in format <host-port>:<container-port>
