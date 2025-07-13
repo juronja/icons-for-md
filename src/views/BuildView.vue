@@ -26,7 +26,7 @@ async function toClipboard(item) {
     console.error(error)
   }
   } else {
-    console.error('Nothing to copy');
+    console.error('Nothing to copy')
   }
 }
 
