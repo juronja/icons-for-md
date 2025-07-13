@@ -141,18 +141,24 @@ pipeline {
         //         }
         //     }
         // }
-        // stage('Deploy PROD on EC2') {
-        //     when {
-        //         branch "main" 
-        //     }
-        //     steps {
-        //         script {
-        //             sshagent(['ssh-aws-juronja-jure']) {
-        //                 echo "Deploying Docker container on EC2  ..."
-        //                 sh "ssh -o StrictHostKeyChecking=no ec2-user@18.185.139.225 'bash -c \"\$(wget -qLO - https://raw.githubusercontent.com/juronja/utm-builder/refs/heads/main/compose-e2c-commands.sh)\"'"
-        //             }
-        //         }
-        //     }
-        // }
+        stage('Deploy MAIN on EC2') {
+            environment {
+                EC2_CREDS = credentials('ssh-aws-ec2-id-amazon')
+            }
+            when {
+                branch "main" 
+            }
+            steps {
+                script {
+                    echo "Copy files to ansible control node ..."
+                    sshagent(['ssh-ansible']) {
+                        sh "scp -o StrictHostKeyChecking=no ansible/* juronja@ansible.lan:~/apps/ansible/icons-for-md"
+                        withCredentials([sshUserPrivateKey(credentialsId: 'ssh-aws-ec2-id-amazon', keyFileVariable: 'keyfile', usernameVariable: 'user')]) {
+                            sh "scp ${keyfile} juronja@ansible.lan:~/.ssh/id_amazon.pem"
+                        }
+                    }
+                }
+            }
+        }
     }
 }
