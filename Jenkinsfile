@@ -7,9 +7,10 @@ pipeline {
         IMAGE_NAME = "icons-for-md"
         PROJECT_NAME = "icons-for-md"
         IMAGE_TAG_DEV = "dev-latest"
+        ANSIBLE_IP = credentials('ip-ansible')
         // Repositories
         DOCKERH_REPO = "juronja"
-        NEXUS_REPO = "192.168.84.20:8082"
+        // NEXUS_REPO = "192.168.84.20:8082"
         ECR_REPO = "233207430299.dkr.ecr.eu-central-1.amazonaws.com"
     }
     options { buildDiscarder(logRotator(numToKeepStr: '10')) } // keeping only n builds
@@ -24,6 +25,7 @@ pipeline {
         stage('Build DEV for Nexus') {
             environment {
                 NEXUS_CREDS = credentials('nexus-creds')
+                NEXUS_REPO = credentials('repo-nexus')
             }
             when {
                 branch "dev"
@@ -152,9 +154,9 @@ pipeline {
                 script {
                     echo "Copy files to ansible control node ..."
                     sshagent(['ssh-ansible']) {
-                        sh "scp -o StrictHostKeyChecking=no ansible/* juronja@ansible.lan:~/apps/ansible/icons-for-md"
+                        sh "scp -o StrictHostKeyChecking=no ansible/* juronja@$ANSIBLE_IP:~/apps/ansible/icons-for-md"
                         withCredentials([sshUserPrivateKey(credentialsId: 'ssh-aws-ec2-id-amazon', keyFileVariable: 'keyfile', usernameVariable: 'user')]) {
-                            sh "scp ${keyfile} juronja@ansible.lan:~/.ssh/id_amazon.pem"
+                            sh "scp ${keyfile} juronja@$ANSIBLE_IP:~/.ssh/id_amazon.pem"
                         }
                     }
                 }
