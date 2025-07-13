@@ -124,7 +124,7 @@ pipeline {
                     remote.host = IP_HOSTING_PROD
                     remote.allowAnyHosts = true
 
-                    withCredentials([sshUserPrivateKey(credentialsId: 'creds-hosting-prod', keyFileVariable: 'keyfile', usernameVariable: 'user')]) {
+                    withCredentials([sshUserPrivateKey(credentialsId: 'ssh-hosting-prod', keyFileVariable: 'keyfile', usernameVariable: 'user')]) {
                         remote.user = user
                         remote.identityFile = keyfile
 
