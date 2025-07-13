@@ -170,7 +170,7 @@ pipeline {
                     remote.host = "$ANSIBLE_IP"
                     remote.allowAnyHosts = true
 
-                    withCredentials([sshUserPrivateKey(credentialsId: 'ssh-aws-ec2-id-amazon', keyFileVariable: 'keyfile', usernameVariable: 'user')]) {
+                    withCredentials([sshUserPrivateKey(credentialsId: 'ssh-ansible', keyFileVariable: 'keyfile', usernameVariable: 'user')]) {
                         remote.user = user
                         remote.identityFile = keyfile
 
