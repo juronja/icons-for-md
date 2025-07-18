@@ -2,8 +2,16 @@ import express from 'express'
 import ViteExpress from "vite-express"
 import * as cheerio from 'cheerio'
 import { optimize } from 'svgo'
+import client from 'prom-client'
 
+// Initialize metrics exporter
+const collectDefaultMetrics = client.collectDefaultMetrics
+collectDefaultMetrics({timeout: 5000})
 
+const httpRequestsTotal = new client.Counter({
+  name: 'http_request_operations_total',
+  help: 'Total number of http requests'
+})
 
 // Start express server
 const app = express() // Initialize the express server
@@ -47,6 +55,11 @@ app.use((req, res, next) => {
   res.header('Access-Control-Allow-Methods', 'GET, OPTIONS') // Allows GET and OPTIONS methods
   res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization') // Allows specific headers
   next() // Pass control to the next middleware/route handler
+})
+// Middleware to track HTTP requests for Prometheus
+app.use((req, res, next) => {
+  httpRequestsTotal.inc() // Increment the counter for each incoming request
+  next()
 })
 
 
@@ -289,6 +302,12 @@ app.get('/api/icons', (req, res) => {
   // Return the global list of icon names as JSON
   res.json(globalIconNameList)
 })
+
+app.get('/metrics', async (req, res) => {
+  res.set('Content-Type', client.register.contentType)
+  res.end(await client.register.metrics())
+})
+
 
 // Server Initialization
 
