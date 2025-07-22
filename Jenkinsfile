@@ -10,7 +10,6 @@ pipeline {
         ANSIBLE_IP = credentials('ip-ansible')
         // Repositories
         DOCKERH_REPO = "juronja"
-        // NEXUS_REPO = "homelab.lan:8082"
         // ECR_REPO = "233207430299.dkr.ecr.eu-central-1.amazonaws.com"
     }
     options { buildDiscarder(logRotator(numToKeepStr: '10')) } // keeping only n builds
@@ -25,7 +24,8 @@ pipeline {
         stage('Build DEV for Nexus') {
             environment {
                 NEXUS_CREDS = credentials('nexus-creds')
-                NEXUS_REPO = credentials('repo-nexus')
+                NEXUS_REPO = "homelab.lan:8082"
+                // NEXUS_REPO = credentials('repo-nexus')
             }
             when {
                 branch "dev"
