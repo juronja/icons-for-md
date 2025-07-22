@@ -25,7 +25,6 @@ pipeline {
             environment {
                 NEXUS_CREDS = credentials('nexus-creds')
                 NEXUS_REPO = "homelab.lan:8082"
-                // NEXUS_REPO = credentials('repo-nexus')
             }
             when {
                 branch "dev"
