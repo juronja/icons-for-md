@@ -134,6 +134,7 @@ pipeline {
                         remote.identityFile = keyfile
 
                         sshScript remote: remote, script: "compose-commands.sh"
+                    }
                 }
             }
         }
