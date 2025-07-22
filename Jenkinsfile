@@ -10,8 +10,8 @@ pipeline {
         ANSIBLE_IP = credentials('ip-ansible')
         // Repositories
         DOCKERH_REPO = "juronja"
-        // NEXUS_REPO = "192.168.84.20:8082"
-        ECR_REPO = "233207430299.dkr.ecr.eu-central-1.amazonaws.com"
+        // NEXUS_REPO = "homelab.lan:8082"
+        // ECR_REPO = "233207430299.dkr.ecr.eu-central-1.amazonaws.com"
     }
     options { buildDiscarder(logRotator(numToKeepStr: '10')) } // keeping only n builds
     stages {
@@ -115,17 +115,25 @@ pipeline {
         }
         stage('Deploy MAIN on HOSTING-PROD') {
             environment {
-                HOSTING_CREDS = credentials('creds-hosting-prod')
+                IP_HOSTING_PROD = credentials('ip-hosting-prod')
             }
             when {
                 branch "main" 
             }
             steps {
-                script { // sshagent must be in script block
-                    sshagent(['ssh-hosting-prod']) {
-                        echo "Deploying Docker container on HOSTING-PROD ..."
-                        sh "ssh -o StrictHostKeyChecking=no $HOSTING_CREDS_USR@$HOSTING_CREDS_PSW 'bash -c \"\$(wget -qLO - https://raw.githubusercontent.com/juronja/icons-for-md/refs/heads/main/compose-commands.sh)\"'"
-                    }
+                script {
+                    echo "Deploying Docker container on HOSTING-PROD ..."
+
+                    def remote = [:]
+                    remote.name = "hosting-prod"
+                    remote.host = IP_HOSTING_PROD
+                    remote.allowAnyHosts = true
+
+                    withCredentials([sshUserPrivateKey(credentialsId: 'ssh-hosting-prod', keyFileVariable: 'keyfile', usernameVariable: 'user')]) {
+                        remote.user = user
+                        remote.identityFile = keyfile
+
+                        sshScript remote: remote, script: "compose-commands.sh"
                 }
             }
         }
