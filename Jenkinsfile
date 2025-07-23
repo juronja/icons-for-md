@@ -14,13 +14,6 @@ pipeline {
     }
     options { buildDiscarder(logRotator(numToKeepStr: '10')) } // keeping only n builds
     stages {
-//        stage('Innit ext script') {
-//            steps {
-//                script {
-//                    xgs = load 'jenkins.groovy'
-//                }
-//            }
-//        }
         stage('Build DEV for Nexus') {
             environment {
                 NEXUS_CREDS = credentials('nexus-creds')
@@ -52,7 +45,6 @@ pipeline {
         //         sh "docker push $ECR_REPO/$IMAGE_NAME:$IMAGE_TAG_DEV"
         //     }
         // }
-
         // stage('Unit tests') {
         //     when {
         //         branch "main" 
@@ -63,7 +55,6 @@ pipeline {
         //         }
         //     }
         // }
-
         stage('Deploy DEV on HOMELAB (Host)') {
             when {
                 branch "dev" 
@@ -113,9 +104,6 @@ pipeline {
             }
         }
         stage('Deploy MAIN on HOSTING-PROD') {
-            environment {
-                IP_HOSTING_PROD = credentials('ip-hosting-prod')
-            }
             when {
                 branch "main" 
             }
@@ -125,7 +113,7 @@ pipeline {
 
                     def remote = [:]
                     remote.name = "hosting-prod"
-                    remote.host = IP_HOSTING_PROD
+                    remote.host = "hosting-prod.lan"
                     remote.allowAnyHosts = true
 
                     withCredentials([sshUserPrivateKey(credentialsId: 'ssh-hosting-prod', keyFileVariable: 'keyfile', usernameVariable: 'user')]) {
