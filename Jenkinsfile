@@ -10,15 +10,14 @@ pipeline {
         IP_ANSIBLE = credentials('ip-ansible')
         // Repositories
         DOCKERH_REPO = "juronja"
-        // NEXUS_REPO = "192.168.84.20:8082"
-        ECR_REPO = "233207430299.dkr.ecr.eu-central-1.amazonaws.com"
+        // ECR_REPO = "233207430299.dkr.ecr.eu-central-1.amazonaws.com"
     }
     options { buildDiscarder(logRotator(numToKeepStr: '10')) } // keeping only n builds
     stages {
         stage('Build DEV for Nexus') {
             environment {
                 NEXUS_CREDS = credentials('nexus-creds')
-                NEXUS_REPO = credentials('repo-nexus')
+                NEXUS_REPO = "homelab.lan:8082"
             }
             when {
                 branch "dev"
@@ -46,7 +45,6 @@ pipeline {
         //         sh "docker push $ECR_REPO/$IMAGE_NAME:$IMAGE_TAG_DEV"
         //     }
         // }
-
         // stage('Unit tests') {
         //     when {
         //         branch "main" 
@@ -57,7 +55,6 @@ pipeline {
         //         }
         //     }
         // }
-
         stage('Deploy DEV on HOMELAB (Host)') {
             when {
                 branch "dev" 
@@ -107,21 +104,16 @@ pipeline {
             }
         }
         stage('Deploy MAIN on HOSTING-PROD') {
-            environment {
-                IP_HOSTING_PROD = credentials('ip-hosting-prod')
-            }
             when {
                 branch "main" 
             }
             steps {
                 script {
                     echo "Deploying Docker container on HOSTING-PROD ..."
-                    // sshagent(['ssh-hosting-prod']) {
-                    //     sh "ssh -o StrictHostKeyChecking=no $HOSTING_CREDS_USR@$HOSTING_CREDS_PSW 'bash -c \"\$(wget -qLO - https://raw.githubusercontent.com/juronja/icons-for-md/refs/heads/main/compose-commands.sh)\"'"
-                    // }
+
                     def remote = [:]
                     remote.name = "hosting-prod"
-                    remote.host = IP_HOSTING_PROD
+                    remote.host = "hosting-prod.lan"
                     remote.allowAnyHosts = true
 
                     withCredentials([sshUserPrivateKey(credentialsId: 'ssh-hosting-prod', keyFileVariable: 'keyfile', usernameVariable: 'user')]) {
