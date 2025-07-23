@@ -139,45 +139,45 @@ pipeline {
         //         }
         //     }
         // }
-        stage('Deploy MAIN on EC2') {
-            when {
-                branch "main" 
-            }
-            steps {
-                script {
-                    echo "Copy files to ansible control node ..."
-                    sshagent(['ssh-ansible']) { // sshagent must be in script block
-                        sh 'scp -r -o StrictHostKeyChecking=no ansible/* juronja@$ANSIBLE_IP:~/apps/ansible/icons-for-md/'
-                        withCredentials([sshUserPrivateKey(credentialsId: 'ssh-aws-ec2-id-amazon', keyFileVariable: 'keyfile')]) {
+        // stage('Deploy MAIN on EC2') {
+        //     when {
+        //         branch "main" 
+        //     }
+        //     steps {
+        //         script {
+        //             echo "Copy files to ansible control node ..."
+        //             sshagent(['ssh-ansible']) { // sshagent must be in script block
+        //                 sh 'scp -r -o StrictHostKeyChecking=no ansible/* juronja@$ANSIBLE_IP:~/apps/ansible/icons-for-md/'
+        //                 withCredentials([sshUserPrivateKey(credentialsId: 'ssh-aws-ec2-id-amazon', keyFileVariable: 'keyfile')]) {
                         
-                            // Check if the file exists on the remote server
-                            def fileExists = sh(script: 'ssh juronja@$ANSIBLE_IP "[ -f ~/.ssh/id_amazon.pem ]"', returnStatus: true)
+        //                     // Check if the file exists on the remote server
+        //                     def fileExists = sh(script: 'ssh juronja@$ANSIBLE_IP "[ -f ~/.ssh/id_amazon.pem ]"', returnStatus: true)
 
-                            if (fileExists != 0) { // If the command returns non-zero status, the file does NOT exist
-                                echo "PEM file does not exist on remote, copying it now..."
-                                sh 'scp $keyfile juronja@$ANSIBLE_IP:~/.ssh/id_amazon.pem'
-                                // Set the correct permissions after copying
-                                sh 'ssh juronja@$ANSIBLE_IP "chmod 400 ~/.ssh/id_amazon.pem"'
-                            } else {
-                                echo "PEM file already exists on remote, skipping copy."
-                            }
+        //                     if (fileExists != 0) { // If the command returns non-zero status, the file does NOT exist
+        //                         echo "PEM file does not exist on remote, copying it now..."
+        //                         sh 'scp $keyfile juronja@$ANSIBLE_IP:~/.ssh/id_amazon.pem'
+        //                         // Set the correct permissions after copying
+        //                         sh 'ssh juronja@$ANSIBLE_IP "chmod 400 ~/.ssh/id_amazon.pem"'
+        //                     } else {
+        //                         echo "PEM file already exists on remote, skipping copy."
+        //                     }
                         
-                        }
-                    }
-                    echo "Execute ansible playbook"
-                    def remote = [:]
-                    remote.name = "ansible"
-                    remote.host = IP_ANSIBLE
-                    remote.allowAnyHosts = true
+        //                 }
+        //             }
+        //             echo "Execute ansible playbook"
+        //             def remote = [:]
+        //             remote.name = "ansible"
+        //             remote.host = IP_ANSIBLE
+        //             remote.allowAnyHosts = true
 
-                    withCredentials([sshUserPrivateKey(credentialsId: 'ssh-ansible', keyFileVariable: 'keyfile', usernameVariable: 'user')]) {
-                        remote.user = user
-                        remote.identityFile = keyfile
+        //             withCredentials([sshUserPrivateKey(credentialsId: 'ssh-ansible', keyFileVariable: 'keyfile', usernameVariable: 'user')]) {
+        //                 remote.user = user
+        //                 remote.identityFile = keyfile
 
-                        sshCommand remote: remote, command: "cd ~/apps/ansible/icons-for-md/ && ansible-playbook -i inventory/inventory_aws_ec2.yaml deploy-ec2-icons-for-md.yaml"
-                    }
-                }
-            }
-        }
+        //                 sshCommand remote: remote, command: "cd ~/apps/ansible/icons-for-md/ && ansible-playbook -i inventory/inventory_aws_ec2.yaml deploy-ec2-icons-for-md.yaml"
+        //             }
+        //         }
+        //     }
+        // }
     }
 }
