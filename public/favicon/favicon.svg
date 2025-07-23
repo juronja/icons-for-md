@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="transparent" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000">
+  <defs>
+    <style>
+      .cls-1 {
+        font-family: Micro5-Regular, 'Micro 5';
+        font-size: 277.15px;
+      }
+
+      .cls-1, .cls-2 {
+        fill: #00bd7e;
+      }
+
+      .cls-3 {
+        fill: #303030;
+      }
+    </style>
+  </defs>
+  <path id="document" class="cls-2" d="m586.33,571.43v71.43h127.96v-71.43h-127.96Zm0,178.57v71.43h127.96v-71.43h-127.96Zm235.1-500v678.57h71.43V250h-71.43Zm-235.1,571.43h127.96v-71.43h-127.96v71.43Zm0-178.57h127.96v-71.43h-127.96v71.43ZM107.14,71.43v857.14h71.43V71.43h-71.43ZM178.57,0v71.43h464.29V0H178.57Zm0,928.57v71.43h642.86v-71.43H178.57ZM714.29,178.57v-107.14h-71.43v178.57h178.57v-71.43h-107.14Z"/>
+  <path class="cls-3" d="m642.86,250V71.43H178.57v857.14h642.86V250h-178.57Zm71.43,571.43h-127.96v-71.43h127.96v71.43Zm0-178.57h-127.96v-71.43h127.96v71.43Z"/>
+  <text class="cls-1" transform="translate(285.71 479.75)"><tspan x="0" y="0">icons</tspan></text>
+  <text class="cls-1" transform="translate(285.71 657.97)"><tspan x="0" y="0">for</tspan></text>
+  <text class="cls-1" transform="translate(285.71 836.99)"><tspan x="0" y="0">md</tspan></text>
+</svg>
