@@ -1,16 +1,17 @@
 # Icons for md
 
-Display icons in your markup documents with this tool.
+Display icons in your markdown documents.
 
-## Exposed ports:
+## Exposed ports
+
 App: `8402`
 
-## Deploy
+## Selfhost
 
 Here is a docker compose.yaml.
 
 ```yaml
-name: icons-for-md # Will be used for auto naming (network, volume names)
+name: icons-for-md
 services:
   app:
     container_name: icons-app
@@ -18,7 +19,5 @@ services:
     image: juronja/icons-for-md:latest
     pull_policy: always
     ports:
-      - 8402:3000 # These ports are in format <host-port>:<container-port>
+      - 8402:3000
 ```
-
-

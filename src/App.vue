@@ -1,5 +1,5 @@
 <script setup>
-import { RouterLink, RouterView } from 'vue-router'
+import { RouterView } from 'vue-router'
 import { useDefinitionsStore } from '@/stores/definitions'
 
 const store = useDefinitionsStore()
@@ -13,7 +13,7 @@ const store = useDefinitionsStore()
         icons for md
         <!-- <img alt="UTM Builder logo" src="@/assets/logo.svg" width="200" height="35" /> -->
       </div>
-      <h1>Icon reference for your markup files</h1>
+      <h1>Icon reference for your markdown files</h1>
     </div>
     <div class="search-box">
       <i class="bi bi-search"></i>

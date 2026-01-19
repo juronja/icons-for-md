@@ -1,5 +1,5 @@
 #
-# This compose file is ment for developers only.
+# This compose file is meant for developers only.
 #
 
 name: icons-for-md-dev # Will be used for auto naming (network, volume names)
