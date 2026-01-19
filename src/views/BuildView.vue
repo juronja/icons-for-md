@@ -8,13 +8,13 @@ import draggable from 'vuedraggable'
 const store = useDefinitionsStore()
 const isCopied = ref(false)
 
-// Get definitions
+// Get icon names from the store
 onBeforeMount( () => {
   store.getIconNames()
 })
 
 
-// Copy campaign name suggestion
+// Copy generated link
 async function toClipboard(item) {
   if (!item == 0) {
     try {
@@ -48,22 +48,9 @@ async function toClipboard(item) {
         <p>(Drag to reorder)</p>
       </div>
       <div class="selected-icons-row">
-        <!-- Display selected icons visually - just images -->
+        <!-- Display selected icons visually and enable dragging -->
         <template v-if="store.selectedIcons.length > 0">
-          <!-- <ul>
-            <li v-for="icon in store.selectedIcons" :key="icon" class="selected-icon-item">
-              <img :src="`https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/${icon}.svg`" :alt="icon" class="icon-img" />
-              <span class="tag-del" @click.stop="store.removeSelectedIcon(icon)">x</span>
-            </li>
-          </ul> -->
-          <draggable
-            v-model="store.selectedIcons"
-            @start="handleDragStart"
-            @end="handleDragEnd"
-            item-key="id"
-            tag="ul"
-            class="selected-icons-list"
-          >
+          <draggable v-model="store.selectedIcons" item-key="id" tag="ul" class="selected-icons-list">
             <template #item="{ element: icon }">
               <li class="selected-icon-item" id="icon">
                 <img :src="`https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/${icon}.svg`" :alt="icon" class="icon-img" />
@@ -77,11 +64,15 @@ async function toClipboard(item) {
         </div>
       </div>
       <hr>
-      <h2>Available Icon Tags</h2>
+      <div class="title-flex-row">
+        <h2>Available Icon Tags</h2>
+        <p>(Click to add)</p>
+      </div>
       <div class="available-icons-row">
         <div v-if="store.isDataLoading">
           Loading definitions ...
         </div>
+        <!-- List available icon tags, add to selection if clicked -->
         <div v-else-if="store.filteredIconNames.length > 0">
           <ul>
             <li v-for="item in store.filteredIconNames.sort()" :key="item" @click="store.addSelectedIcon(item)">
@@ -90,7 +81,7 @@ async function toClipboard(item) {
           </ul>
         </div>
         <div v-else>
-          <p class="no-icons-selected">No matching icons found. Try a different search query or clear the search box.</p>
+          <p class="no-icons-selected">No matching icons found. Try a different search query.</p>
         </div>
       </div>
     </div>
@@ -119,10 +110,10 @@ async function toClipboard(item) {
 
 .selected-icon-item {
   position: relative;
-  display: flex; /* Kept flex for centering potential images */
+  display: flex;
   align-items: center;
   justify-content: center;
-  padding: var(--icon-padding); /* Reduced padding */
+  padding: var(--icon-padding);
   border: none;
   background-color: rgb(36, 41, 56);
   border-radius: 0.5rem;
@@ -135,9 +126,8 @@ async function toClipboard(item) {
 
 .sortable-ghost {
   opacity: 0.5; /* Makes the placeholder semi-transparent */
-  background-color: #555; /* Give it a distinct background color */
-  border: 2px dashed #999; /* Add a dashed border to make it even clearer */
-  /* You can also match the size of your actual items. (48px img + 2*0.2rem padding) */
+  background-color: #555;
+  border: 2px dashed #999; /* Dashed border */
   width: calc( var(--icon-edge-size) + 2 * var(--icon-padding) );
   height: calc( var(--icon-edge-size) + 2 * var(--icon-padding) );
 }
@@ -146,7 +136,7 @@ async function toClipboard(item) {
   position: absolute;
   top: 0px;
   right: 0px;
-  z-index: 10; /* Ensure it's above the image */
+  z-index: 10; /* Ensure it's above the icon */
   background-color: var(--color-danger);
   color: var(--color-white);
   width: 0.9rem;
@@ -181,7 +171,6 @@ async function toClipboard(item) {
   height: var(--icon-edge-size);
   flex-shrink: 0;
 }
-
 
 input, select {
   padding: var(--input-padding);
@@ -277,6 +266,5 @@ input, select {
   }
 
 }
-
 
 </style>

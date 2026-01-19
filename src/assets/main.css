@@ -36,20 +36,13 @@ footer {
   width: 100% !important; /* Override max-width */
 }
 
-a {
-  text-decoration: none;
-  color: var(--color-primary);
-  transition: 0.4s;
-  padding: 3px;
-}
-
 /* Fonts */
 h1 {
   font-family: "Asap", sans-serif;
   font-optical-sizing: auto;
   font-weight: 400;
   font-style: normal;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
 }
 
 h2 {
@@ -60,10 +53,7 @@ h2 {
   font-size: 1.2rem;
 }
 
-button:hover {
-  cursor: pointer;
-}
-
+/* other elements */
 hr {
   margin: 1.5rem calc(var(--gutter-x)* .0);
   background-color: var(--color-border);
@@ -71,7 +61,7 @@ hr {
   height: 0.1rem;
 }
 
-.button {
+button {
   padding: var(--input-padding);
   color: var(--color-button-text);
   background-color: var(--color-primary);
@@ -79,11 +69,13 @@ hr {
   border-radius: 0.25rem;
   font-size: 1rem;
 }
-  .button:hover {
-    background-color: var(--color-primary-muted);
-    box-shadow: 0 0 0 .25rem var(--color-shadow-hover);
-    outline: 0;
-  }
+
+button:hover {
+  cursor: pointer;
+  background-color: var(--color-primary-muted);
+  box-shadow: 0 0 0 .25rem var(--color-shadow-hover);
+  outline: 0
+}
 
 .section-box {
   padding: 0.1rem 0;
@@ -94,83 +86,17 @@ hr {
 .section {
   display: flex;
   flex-direction: column;
-  /* flex-wrap: wrap;
-  flex: 0 0 auto; */
   padding: calc(var(--gutter-x)* .5);
   margin-bottom: calc(var(--section-gap) / 2);
 }
 
-/* Layout defaults */
-.col-100 {
-  flex: 0 0 auto;
-  width: 100%;
+/*  hyperlink styles */
+a {
+  text-decoration: none;
+  color: var(--color-primary);
+  transition: 0.4s;
+  padding: 3px;
 }
-
-.col-80 {
-  flex: 0 0 auto;
-  width: 80%;
-}
-
-.col-70 {
-  flex: 0 0 auto;
-  width: 70%;
-}
-
-.col-60 {
-  flex: 0 0 auto;
-  width: 60%;
-}
-
-.col-50 {
-  flex: 0 0 auto;
-  width: 50%;
-}
-
-.col-40 {
-  flex: 0 0 auto;
-  width: 40%;
-}
-
-.col-30 {
-  flex: 0 0 auto;
-  width: 30%;
-}
-
-.col-25 {
-  flex: 0 0 auto;
-  width: 25%;
-}
-
-.col-20 {
-  flex: 0 0 auto;
-  width: 20%;
-}
-
-.col-15 {
-  flex: 0 0 auto;
-  width: 15%;
-}
-
-.col-10 {
-  flex: 0 0 auto;
-  width: 10%;
-}
-
-.col-5 {
-  flex: 0 0 auto;
-  width: 5%;
-}
-
-
-/* Transitions */
-.v-enter-active, .v-leave-active {
-  transition: opacity 50ms linear;
-}
-
-.v-enter-from, .v-leave-to {
-  opacity: 0;
-}
-
 
 @media (hover: hover) {
   a:hover {
@@ -193,7 +119,7 @@ hr {
 
 @media screen and (max-width: 1024px) {
   h1 {
-    font-size: 1rem;
+    font-size: 0.85rem;
   }
 
   h2 {

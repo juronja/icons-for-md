@@ -2,7 +2,6 @@ import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
 
 export const useDefinitionsStore = defineStore('definitions', () => {
-  const isSaved = ref(false)
   const isDataLoading = ref(false)
 
   // All definitions
@@ -24,12 +23,15 @@ export const useDefinitionsStore = defineStore('definitions', () => {
     return svg.value.filter(name => name.toLowerCase().includes(query))
   })
 
-  // Dynamically determine the base URL
+  // Dynamically determine the base URL for the copy link
   const baseUrl = computed(() => {
     const hostname = window.location.hostname;
     if (hostname === 'localhost' || hostname.startsWith('127.0.0.1')) {
       // Development environment
       return 'http://localhost:3000'
+    } else if (hostname.includes('node.lan')) {
+      // Dev environment
+      return 'https://node.lan'
     } else if (hostname.includes('dev.homelabtales.com')) {
       // Dev environment
       return 'https://icons-for-md-dev.homelabtales.com'
@@ -47,11 +49,7 @@ export const useDefinitionsStore = defineStore('definitions', () => {
       }
   })
 
-
-
-
   //********* FUNCTIONS **********//
-
 
   // Get All Icon Names
   async function getIconNames() {
@@ -59,7 +57,7 @@ export const useDefinitionsStore = defineStore('definitions', () => {
     console.log("Fetching icon names...")
 
     try {
-      // Get data from dashboard-icons
+      // Get data from dashboard-icons using relative link to backend API
       const response = await fetch("api/icons")
       const iconsData = await response.json()
       svg.value = iconsData
@@ -73,7 +71,7 @@ export const useDefinitionsStore = defineStore('definitions', () => {
 
   // Add selected icon to the selectedIcons array
   function addSelectedIcon(iconName) {
-    // Check if the icon is already in the selectedIcons array
+    // Check if the icon is already in the selectedIcons array first
     if (!selectedIcons.value.includes(iconName)) {
       selectedIcons.value.push(iconName)
       console.log(`Added icon: ${iconName}`)
@@ -91,11 +89,7 @@ export const useDefinitionsStore = defineStore('definitions', () => {
     }
   }
 
-
-
   return {
-    svg,
-    isSaved,
     isDataLoading,
     searchText,
     filteredIconNames,
