@@ -1,14 +1,18 @@
 # Icons for md
 
-Display icons in your markdown documents.
+Display popular tech app and brand icons in your markdown documents.
 
-## Exposed ports
+## How to use
 
-App: `8402`
+Search for icons, stack them in the order you like and copy the link to your markdown document.
+
+Try out this demo: [icons-for-md.homelabtales.com](https://icons-for-md.homelabtales.com/)
+
+⚠️ Website must be online for icons to show.
 
 ## Selfhost
 
-Here is a docker compose.yaml.
+Rely on your own infrastructure and self-host with this Docker compose yaml.
 
 ```yaml
 name: icons-for-md
